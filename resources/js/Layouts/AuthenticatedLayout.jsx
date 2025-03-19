@@ -1,17 +1,12 @@
 // resources/js/Layouts/AuthenticatedLayout.jsx
 import { useState } from 'react';
 import { Link } from '@inertiajs/react';
-// Eliminamos las importaciones que no existen
-// import ApplicationLogo from '@/Components/ApplicationLogo';
-// import Dropdown from '@/Components/Dropdown';
-// import NavLink from '@/Components/NavLink';
-// import ResponsiveNavLink from '@/Components/ResponsiveNavLink';
+import UserMenu from '@/Components/UserMenu';
 
 export default function Authenticated({ user, header, children }) {
     const [showingNavigationDropdown, setShowingNavigationDropdown] = useState(false);
-    const [showSidebar, setShowSidebar] = useState(false);
+    const [showSidebar, setShowSidebar] = useState(false); // Cambiado a false por defecto
 
-    // Función para crear un ResponsiveNavLink ya que no tenemos el componente
     const ResponsiveNavLink = ({ href, method = 'get', as = 'a', active = false, children }) => {
         return (
             <Link
@@ -35,42 +30,44 @@ export default function Authenticated({ user, header, children }) {
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex justify-between h-16">
                         <div className="flex items-center">
+                            {/* Botón para mostrar/ocultar el sidebar */}
+                            <button
+                                onClick={() => setShowSidebar(!showSidebar)}
+                                className="inline-flex items-center justify-center p-2 mr-2 rounded-md text-white hover:bg-green-700 focus:outline-none transition duration-150 ease-in-out"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                                </svg>
+                            </button>
+                            
                             <div className="shrink-0 flex items-center">
-                                <Link href="/">
-                                    <div className="flex items-center gap-2">
-                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <Link href="/" className="flex items-center gap-2">
+                                    <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center">
+                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
                                         </svg>
-                                        <h1 className="text-2xl font-bold">EcoTracker</h1>
-                                        {user.role === 'admin' && (
-                                            <span className="bg-white text-green-600 px-2 py-0.5 rounded text-xs font-bold">
-                                                ADMIN
-                                            </span>
-                                        )}
                                     </div>
+                                    <span className="text-2xl font-bold">EcoTracker</span>
+                                    {user.role === 'admin' && (
+                                        <span className="bg-white text-green-600 px-2 py-0.5 rounded text-xs font-bold">
+                                            ADMIN
+                                        </span>
+                                    )}
                                 </Link>
                             </div>
                         </div>
 
                         <div className="hidden sm:flex sm:items-center sm:ml-6">
-                            <div className="flex items-center gap-4">
-                                <div className="flex items-center gap-1">
-                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15l8-8m0 0l-8-8m8 8h-16" />
-                                    </svg>
-                                    <span className="font-bold">{user.points || 0} puntos</span>
-                                </div>
-                                
-                                <button
-                                    onClick={() => setShowSidebar(!showSidebar)}
-                                    className="inline-flex items-center justify-center p-2 rounded-md text-white hover:bg-green-700 focus:outline-none transition duration-150 ease-in-out"
-                                >
-                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                                    </svg>
-                                </button>
-                            </div>
-                        </div>
+    <div className="flex items-center gap-4">
+        <div className="flex items-center gap-1">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
+            </svg>
+            <span className="font-bold">{user.points || 0} puntos</span>
+        </div>
+        <UserMenu user={user} />
+    </div>
+</div>
 
                         <div className="-mr-2 flex items-center sm:hidden">
                             <button
@@ -114,18 +111,8 @@ export default function Authenticated({ user, header, children }) {
                 </div>
             </nav>
 
-            {header && (
-                <header className="bg-white shadow">
-                    <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">{header}</div>
-                </header>
-            )}
-
-            <main className="flex-1">
-                {children}
-            </main>
-
-            {/* Sidebar derecho */}
-            <div className={`fixed inset-y-0 right-0 z-50 w-64 bg-white shadow-lg transform ${showSidebar ? 'translate-x-0' : 'translate-x-full'} transition-transform duration-300 ease-in-out`}>
+            {/* Sidebar izquierdo */}
+            <div className={`fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-lg transform ${showSidebar ? 'translate-x-0' : '-translate-x-full'} transition-transform duration-300 ease-in-out`}>
                 <div className="h-full flex flex-col">
                     <div className="p-4 border-b">
                         <div className="flex items-center justify-between">
@@ -156,7 +143,7 @@ export default function Authenticated({ user, header, children }) {
                                 className="flex items-center gap-2 p-2 rounded-md hover:bg-gray-100 text-gray-700"
                             >
                                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
                                 </svg>
                                 <span>Dashboard</span>
                             </Link>
@@ -220,8 +207,21 @@ export default function Authenticated({ user, header, children }) {
                     </div>
                 </div>
             </div>
+
+            {/* Contenido principal - sin margen fijo */}
+            <div className="transition-all duration-300 ease-in-out">
+                {header && (
+                    <header className="bg-white shadow">
+                        <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">{header}</div>
+                    </header>
+                )}
+
+                <main className="flex-1">
+                    {children}
+                </main>
+            </div>
             
-            {/* Overlay para cerrar el sidebar al hacer clic fuera */}
+            {/* Overlay para cerrar el sidebar en móvil */}
             {showSidebar && (
                 <div 
                     className="fixed inset-0 bg-black bg-opacity-50 z-40"

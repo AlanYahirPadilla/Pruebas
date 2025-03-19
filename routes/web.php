@@ -8,6 +8,9 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
+
+use App\Http\Controllers\Admin\ValidationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -22,6 +25,16 @@ Route::get('/', function () {
     ]);
 });
 
+// Asegúrate de que estas rutas estén dentro del grupo de middleware auth y admin
+Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
+    
+    // Rutas de validación
+    Route::post('/validations/{id}/approve', [ValidationController::class, 'approve'])
+        ->name('validations.approve');
+    Route::post('/validations/{id}/reject', [ValidationController::class, 'reject'])
+        ->name('validations.reject');
+});
 // Rutas protegidas por autenticación
 Route::middleware(['auth', 'verified'])->group(function () {
     // Dashboard del usuario

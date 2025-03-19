@@ -21,13 +21,22 @@ class DashboardController extends Controller
 
         $user = Auth::user();
         
-        // Obtener historial de reciclaje
-        $recyclingHistory = $user->recycling_records()
+        // Obtener los registros de reciclaje del usuario
+        $recyclingHistory = $user->recyclingRecords()
             ->with('material')
-            ->orderBy('created_at', 'desc')
-            ->take(10)
-            ->get();
-            
+            ->latest()
+            ->get()
+            ->map(function ($record) {
+                return [
+                    'id' => $record->id,
+                    'date' => $record->created_at->format('Y-m-d'),
+                    'material' => $record->material->name,
+                    'quantity' => $record->quantity,
+                    'points' => $record->points_earned,
+                    'status' => $this->translateStatus($record->status),
+                ];
+            });
+        
         // Obtener estadísticas de materiales reciclados
         $materialStats = RecyclingRecord::with('material')
             ->where('user_id', $user->id)
@@ -115,5 +124,14 @@ class DashboardController extends Controller
             'materialDistribution' => $materialDistribution,
             'recentActivity' => $recentActivity
         ]);
+    }
+
+    private function translateStatus($status)
+    {
+        return [
+            'pending' => 'Pendiente',
+            'approved' => 'Aprobado',
+            'rejected' => 'Rechazado',
+        ][$status] ?? $status;
     }
 }

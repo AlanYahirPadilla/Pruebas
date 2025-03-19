@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -10,28 +9,25 @@ use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable;
 
     /**
      * The attributes that are mass assignable.
      *
-     * @var list<string>
+     * @var array<int, string>
      */
     protected $fillable = [
         'name',
         'email',
         'password',
-        'student_id',
-        'career',
         'role',
-        'points'
+        'points',
     ];
 
     /**
      * The attributes that should be hidden for serialization.
      *
-     * @var list<string>
+     * @var array<int, string>
      */
     protected $hidden = [
         'password',
@@ -39,34 +35,20 @@ class User extends Authenticatable
     ];
 
     /**
-     * Get the attributes that should be cast.
+     * The attributes that should be cast.
      *
-     * @return array<string, string>
+     * @var array<string, string>
      */
-    protected function casts(): array
-    {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-        ];
-    }
-    // Añadir estas relaciones
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+        'password' => 'hashed',
+    ];
+
+    /**
+     * Get the recycling records for the user.
+     */
     public function recyclingRecords()
     {
         return $this->hasMany(RecyclingRecord::class);
     }
-
-    public function rewardRedemptions()
-    {
-        return $this->hasMany(RewardRedemption::class);
-    }
-    public function recycling_records()
-    {
-        return $this->hasMany(RecyclingRecord::class);
-    }
-    public function reward_redemptions()
-    {
-        return $this->hasMany(RewardRedemption::class);
-    }
-    
 }
